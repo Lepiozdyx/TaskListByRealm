@@ -59,6 +59,7 @@ final class TasksViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
         
+        
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [unowned self] _, _, isDone in
             showAlert(with: task) {
                 tableView.reloadRows(at: [indexPath], with: .automatic)
