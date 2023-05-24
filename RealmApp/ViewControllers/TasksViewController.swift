@@ -59,6 +59,10 @@ final class TasksViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
         
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [unowned self] _, _, _ in
+            storageManager.delete(task, from: taskList)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
         
         let editAction = UIContextualAction(style: .normal, title: "Edit") { [unowned self] _, _, isDone in
             showAlert(with: task) {
@@ -69,7 +73,7 @@ final class TasksViewController: UITableViewController {
         
         editAction.backgroundColor = .orange
         
-        return UISwipeActionsConfiguration(actions: [editAction])
+        return UISwipeActionsConfiguration(actions: [editAction, deleteAction])
     }
     
     // MARK: - Adding new task action

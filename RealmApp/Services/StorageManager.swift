@@ -72,6 +72,12 @@ final class StorageManager {
         }
     }
     
+    func delete(_ task: Task, from tasklist: TaskList) {
+        write {
+            realm.delete(task)
+        }
+    }
+    
     
     // MARK: - Private realm write method
     private func write(completion: () -> Void) {
