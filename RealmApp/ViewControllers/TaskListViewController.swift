@@ -10,11 +10,13 @@ import UIKit
 import RealmSwift
 
 final class TaskListViewController: UITableViewController {
-
+    
+    // MARK: - Private properties
     private var taskLists: Results<TaskList>!
     private let storageManager = StorageManager.shared
     private let dataManager = DataManager.shared
     
+    // MARK: - View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         let addButton = UIBarButtonItem(
@@ -86,13 +88,22 @@ final class TaskListViewController: UITableViewController {
         tasksVC.taskList = taskList
     }
 
+    // MARK: - Adding and sorting
     @IBAction func sortingList(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            taskLists = taskLists.sorted(byKeyPath: "date", ascending: true)
+        default:
+            taskLists = taskLists.sorted(byKeyPath: "title", ascending: true)
+        }
+        tableView.reloadData()
     }
     
     @objc private func addButtonPressed() {
         showAlert()
     }
     
+    // MARK: - Create temp data
     private func createTempData() {
         if !UserDefaults.standard.bool(forKey: "done") {
             dataManager.createTempData { [unowned self] in
