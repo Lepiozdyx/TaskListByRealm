@@ -50,7 +50,10 @@ final class TaskListViewController: UITableViewController {
         content.text = taskList.title
         
         let unfinishedTasks = taskList.tasks.filter("isComplete = false")
-        if unfinishedTasks.count == 0 {
+        
+        if taskList.tasks.count == 0 {
+            content.secondaryText = "0"
+        } else if unfinishedTasks.count == 0 {
             content.secondaryText = "✅"
         } else {
             content.secondaryText = unfinishedTasks.count.formatted()
