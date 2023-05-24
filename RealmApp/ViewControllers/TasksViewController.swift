@@ -28,8 +28,7 @@ final class TasksViewController: UITableViewController {
         )
         navigationItem.rightBarButtonItems = [addButton, editButtonItem]
         
-        currentTasks = taskList.tasks.filter("isComplete = false")
-        completedTasks = taskList.tasks.filter("isComplete = true")
+        refreshData()
     }
     
     // MARK: - UITableViewDataSource
@@ -71,21 +70,28 @@ final class TasksViewController: UITableViewController {
             isDone(true)
         }
         
+        // TODO: Не получилось сделать анимацию перемещения задач между секциями.
         let doneAction = UIContextualAction(style: .normal, title: "Done") { [unowned self] _, _, isDone in
             storageManager.done(task)
-            tableView.moveRow(at: indexPath, to: IndexPath(row: completedTasks.count - 1, section: 1))
+            refreshData()
+            tableView.reloadData()
             isDone(true)
         }
         
         editAction.backgroundColor = .orange
-        doneAction.backgroundColor = .green
+        doneAction.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
         
         return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
     }
     
-    // MARK: - Adding new task action
+    // MARK: - Adding and refresh tasks actions
     @objc private func addButtonPressed() {
         showAlert()
+    }
+    
+    private func refreshData() {
+        currentTasks = taskList.tasks.filter("isComplete = false")
+        completedTasks = taskList.tasks.filter("isComplete = true")
     }
 
 }
