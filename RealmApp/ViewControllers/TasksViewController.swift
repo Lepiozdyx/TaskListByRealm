@@ -60,7 +60,7 @@ final class TasksViewController: UITableViewController {
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [unowned self] _, _, _ in
-            storageManager.delete(task, from: taskList)
+            storageManager.delete(task)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         
@@ -71,9 +71,16 @@ final class TasksViewController: UITableViewController {
             isDone(true)
         }
         
-        editAction.backgroundColor = .orange
+        let doneAction = UIContextualAction(style: .normal, title: "Done") { [unowned self] _, _, isDone in
+            storageManager.done(task)
+            tableView.moveRow(at: indexPath, to: IndexPath(row: completedTasks.count - 1, section: 1))
+            isDone(true)
+        }
         
-        return UISwipeActionsConfiguration(actions: [editAction, deleteAction])
+        editAction.backgroundColor = .orange
+        doneAction.backgroundColor = .green
+        
+        return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
     }
     
     // MARK: - Adding new task action

@@ -72,9 +72,15 @@ final class StorageManager {
         }
     }
     
-    func delete(_ task: Task, from tasklist: TaskList) {
+    func delete(_ task: Task) {
         write {
             realm.delete(task)
+        }
+    }
+    
+    func done(_ task: Task) {
+        write {
+            task.isComplete = !task.isComplete
         }
     }
     
