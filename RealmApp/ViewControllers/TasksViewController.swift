@@ -61,6 +61,7 @@ final class TasksViewController: UITableViewController {
 
 }
 
+// MARK: - AlertController
 extension TasksViewController {
     private func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
         let alertBuilder = AlertControllerBuilder(
@@ -75,7 +76,8 @@ extension TasksViewController {
                 style: .default
             ) { [weak self] taskTitle, taskNote in
                 if let task, let completion {
-                    // TODO: - edit task
+                    self?.storageManager.edit(task, newTaskTitle: taskTitle, newTaskNote: taskNote)
+                    completion()
                     return
                 }
                 self?.save(task: taskTitle, withNote: taskNote)

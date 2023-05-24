@@ -28,6 +28,7 @@ final class TaskListViewController: UITableViewController {
         navigationItem.rightBarButtonItem = addButton
         navigationItem.leftBarButtonItem = editButtonItem
         
+        // Load TaskList objects from the Realm database for the initial display of data
         taskLists = storageManager.realm.objects(TaskList.self)
         createTempData()
     }
