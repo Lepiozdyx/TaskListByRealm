@@ -53,8 +53,9 @@ final class TaskListViewController: UITableViewController {
         
         if taskList.tasks.count == 0 {
             content.secondaryText = "0"
+            cell.accessoryType = .none
         } else if unfinishedTasks.count == 0 {
-            content.secondaryText = "✅"
+            cell.accessoryType = .checkmark
         } else {
             content.secondaryText = unfinishedTasks.count.formatted()
         }
