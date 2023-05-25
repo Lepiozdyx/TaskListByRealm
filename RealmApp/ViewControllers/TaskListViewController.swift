@@ -58,6 +58,7 @@ final class TaskListViewController: UITableViewController {
             cell.accessoryType = .checkmark
         } else {
             content.secondaryText = unfinishedTasks.count.formatted()
+            cell.accessoryType = .none
         }
         
         cell.contentConfiguration = content
@@ -102,12 +103,10 @@ final class TaskListViewController: UITableViewController {
 
     // MARK: - Adding and sorting
     @IBAction func sortingList(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            taskLists = taskLists.sorted(byKeyPath: "date", ascending: true)
-        default:
-            taskLists = taskLists.sorted(byKeyPath: "title", ascending: true)
-        }
+        taskLists = sender.selectedSegmentIndex == 0
+            ? taskLists.sorted(byKeyPath: "date", ascending: true)
+            : taskLists.sorted(byKeyPath: "title", ascending: true)
+        
         tableView.reloadData()
     }
     
