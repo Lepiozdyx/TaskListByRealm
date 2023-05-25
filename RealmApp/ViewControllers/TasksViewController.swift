@@ -70,10 +70,17 @@ final class TasksViewController: UITableViewController {
             isDone(true)
         }
         
-        // TODO: Не получилось сделать анимацию перемещения задач между секциями.
         let doneAction = UIContextualAction(style: .normal, title: indexPath.section == 0 ? "Done" : "Undone") { [unowned self] _, _, isDone in
             storageManager.done(task)
-            tableView.reloadData()
+            refreshData()
+
+            let currentTaskIndex = currentTasks.index(of: task)
+            let completedTaskIndex = completedTasks.index(of: task)
+            guard let index = indexPath.section == 0 ? completedTaskIndex : currentTaskIndex else { return }
+            let destination = IndexPath(row: index, section: 1 - indexPath.section)
+            
+            tableView.moveRow(at: indexPath, to: destination)
+
             isDone(true)
         }
         
