@@ -19,6 +19,7 @@
 		A8E78FE9241A76EE00E66973 /* AlertControllerBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E78FE8241A76EE00E66973 /* AlertControllerBuilder.swift */; };
 		A8EFE6472A1BEAF300B9D0C6 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = A8EFE6462A1BEAF300B9D0C6 /* Realm */; };
 		A8EFE6492A1BEAF300B9D0C6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A8EFE6482A1BEAF300B9D0C6 /* RealmSwift */; };
+		FA84AB462A2240B600A1ABBE /* Extension + UITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA84AB452A2240B600A1ABBE /* Extension + UITableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		A872A12020E9D87400ECE2BA /* TaskListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListViewController.swift; sourceTree = "<group>"; };
 		A872A12220E9D88E00ECE2BA /* TasksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
 		A8E78FE8241A76EE00E66973 /* AlertControllerBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertControllerBuilder.swift; sourceTree = "<group>"; };
+		FA84AB452A2240B600A1ABBE /* Extension + UITableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension + UITableViewCell.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 				A8C2C60628B626750073F613 /* Storyboards */,
 				A8C2C60828B626980073F613 /* App */,
 				A8C2C60728B6268C0073F613 /* Resurces */,
+				FA84AB472A2240BA00A1ABBE /* Extensions */,
 			);
 			path = RealmApp;
 			sourceTree = "<group>";
@@ -137,6 +140,14 @@
 				A872A11A20E9D82600ECE2BA /* Info.plist */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		FA84AB472A2240BA00A1ABBE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FA84AB452A2240B600A1ABBE /* Extension + UITableViewCell.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,6 +237,7 @@
 				A804828627103A100095A493 /* StorageManager.swift in Sources */,
 				A872A12120E9D87400ECE2BA /* TaskListViewController.swift in Sources */,
 				A872A12320E9D88E00ECE2BA /* TasksViewController.swift in Sources */,
+				FA84AB462A2240B600A1ABBE /* Extension + UITableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
