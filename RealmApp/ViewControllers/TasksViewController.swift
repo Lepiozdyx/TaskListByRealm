@@ -13,25 +13,44 @@ final class TasksViewController: UITableViewController {
     
     var taskList: TaskList!
     
+    // MARK: Private properties
     private var currentTasks: Results<Task>!
     private var completedTasks: Results<Task>!
     private let storageManager = StorageManager.shared
-
+    private let cellIdentifier = "TasksCell"
+    
+    // MARK: View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         title = taskList.title
-        
+        setupNavigationItem()
+        refreshData()
+    }
+    
+    // MARK: Adding and refresh tasks actions
+    @objc private func addButtonPressed() {
+        showAlert()
+    }
+    
+    private func refreshData() {
+        currentTasks = taskList.tasks.filter("isComplete = false")
+        completedTasks = taskList.tasks.filter("isComplete = true")
+    }
+    
+    // MARK: Setup UI
+    private func setupNavigationItem() {
         let addButton = UIBarButtonItem(
             barButtonSystemItem: .add,
             target: self,
             action: #selector(addButtonPressed)
         )
         navigationItem.rightBarButtonItems = [addButton, editButtonItem]
-        
-        refreshData()
     }
     
-    // MARK: - UITableViewDataSource
+}
+
+// MARK: - UITableViewDataSource
+extension TasksViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         2
     }
@@ -45,7 +64,7 @@ final class TasksViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TasksCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         var content = cell.defaultContentConfiguration()
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
         content.text = task.title
@@ -53,8 +72,10 @@ final class TasksViewController: UITableViewController {
         cell.contentConfiguration = content
         return cell
     }
-    
-    // MARK: - UITableViewDelegate
+}
+
+// MARK: - UITableViewDelegate
+extension TasksViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
         
@@ -73,14 +94,14 @@ final class TasksViewController: UITableViewController {
         let doneAction = UIContextualAction(style: .normal, title: indexPath.section == 0 ? "Done" : "Undone") { [unowned self] _, _, isDone in
             storageManager.done(task)
             refreshData()
-
+            
             let currentTaskIndex = currentTasks.index(of: task)
             let completedTaskIndex = completedTasks.index(of: task)
             guard let index = indexPath.section == 0 ? completedTaskIndex : currentTaskIndex else { return }
             let destination = IndexPath(row: index, section: 1 - indexPath.section)
             
             tableView.moveRow(at: indexPath, to: destination)
-
+            
             isDone(true)
         }
         
@@ -89,22 +110,11 @@ final class TasksViewController: UITableViewController {
         
         return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
     }
-    
-    // MARK: - Adding and refresh tasks actions
-    @objc private func addButtonPressed() {
-        showAlert()
-    }
-    
-    private func refreshData() {
-        currentTasks = taskList.tasks.filter("isComplete = false")
-        completedTasks = taskList.tasks.filter("isComplete = true")
-    }
-
 }
 
 // MARK: - AlertController
-extension TasksViewController {
-    private func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
+private extension TasksViewController {
+    func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
         let alertBuilder = AlertControllerBuilder(
             title: task != nil ? "Edit Task" : "New Task",
             message: "What do you want to do?"
@@ -129,7 +139,7 @@ extension TasksViewController {
         present(alertController, animated: true)
     }
     
-    private func save(task: String, withNote note: String) {
+    func save(task: String, withNote note: String) {
         storageManager.save(task, withNote: note, to: taskList) { task in
             let rowIndex = IndexPath(row: currentTasks.index(of: task) ?? 0, section: 0)
             tableView.insertRows(at: [rowIndex], with: .automatic)

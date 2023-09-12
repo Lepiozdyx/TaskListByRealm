@@ -11,23 +11,16 @@ import RealmSwift
 
 final class TaskListViewController: UITableViewController {
     
-    // MARK: - Private properties
+    // MARK: Private properties
     private var taskLists: Results<TaskList>!
-    private let storageManager = StorageManager.shared
     private let dataManager = DataManager.shared
+    private let storageManager = StorageManager.shared
+    private let cellIdentifier = "TaskListCell"
     
-    // MARK: - View life cycle
+    // MARK: View life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let addButton = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(addButtonPressed)
-        )
-        
-        navigationItem.rightBarButtonItem = addButton
-        navigationItem.leftBarButtonItem = editButtonItem
-        
+        setupNavigationItem()
         // Load TaskList objects from the Realm database for the initial display of data
         taskLists = storageManager.realm.objects(TaskList.self)
         createTempData()
@@ -38,19 +31,67 @@ final class TaskListViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    // MARK: - UITableViewDataSource
+    // MARK: Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let indexPath = tableView.indexPathForSelectedRow else { return }
+        guard let tasksVC = segue.destination as? TasksViewController else { return }
+        let taskList = taskLists[indexPath.row]
+        tasksVC.taskList = taskList
+    }
+    
+    // MARK: Adding and sorting
+    @IBAction func sortingList(_ sender: UISegmentedControl) {
+        taskLists = sender.selectedSegmentIndex == 0
+        ? taskLists.sorted(byKeyPath: "date")
+        : taskLists.sorted(byKeyPath: "title")
+        
+        tableView.reloadData()
+    }
+    
+    @objc private func addButtonPressed() {
+        showAlert()
+    }
+    
+    // MARK: Create temp data
+    private func createTempData() {
+        if !UserDefaults.standard.bool(forKey: "done") {
+            dataManager.createTempData { [unowned self] in
+                UserDefaults.standard.set(true, forKey: "done")
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    // MARK: setup UI
+    private func setupNavigationItem() {
+        let addButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addButtonPressed)
+        )
+        
+        navigationItem.rightBarButtonItem = addButton
+        navigationItem.leftBarButtonItem = editButtonItem
+    }
+    
+}
+
+// MARK: - UITableViewDataSource
+extension TaskListViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         taskLists.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TaskListCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         let taskList = taskLists[indexPath.row]
         cell.configure(with: taskList)
         return cell
     }
-    
-    // MARK: - UITableViewDelegate
+}
+
+// MARK: - UITableViewDelegate
+extension TaskListViewController {
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let taskList = taskLists[indexPath.row]
         
@@ -77,42 +118,11 @@ final class TaskListViewController: UITableViewController {
         
         return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
     }
-    
-    // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let indexPath = tableView.indexPathForSelectedRow else { return }
-        guard let tasksVC = segue.destination as? TasksViewController else { return }
-        let taskList = taskLists[indexPath.row]
-        tasksVC.taskList = taskList
-    }
-
-    // MARK: - Adding and sorting
-    @IBAction func sortingList(_ sender: UISegmentedControl) {
-        taskLists = sender.selectedSegmentIndex == 0
-            ? taskLists.sorted(byKeyPath: "date")
-            : taskLists.sorted(byKeyPath: "title")
-        
-        tableView.reloadData()
-    }
-    
-    @objc private func addButtonPressed() {
-        showAlert()
-    }
-    
-    // MARK: - Create temp data
-    private func createTempData() {
-        if !UserDefaults.standard.bool(forKey: "done") {
-            dataManager.createTempData { [unowned self] in
-                UserDefaults.standard.set(true, forKey: "done")
-                tableView.reloadData()
-            }
-        }
-    }
 }
 
 // MARK: - AlertController
-extension TaskListViewController {
-    private func showAlert(with taskList: TaskList? = nil, completion: (() -> Void)? = nil) {
+private extension TaskListViewController {
+    func showAlert(with taskList: TaskList? = nil, completion: (() -> Void)? = nil) {
         let alertBuilder = AlertControllerBuilder(
             title: taskList != nil ? "Edit List" : "New List",
             message: "Please set title for new task list"
@@ -135,7 +145,7 @@ extension TaskListViewController {
         present(alertController, animated: true)
     }
     
-    private func save(taskList: String) {
+    func save(taskList: String) {
         storageManager.save(taskList) { taskList in
             let rowIndex = IndexPath(row: taskLists.index(of: taskList) ?? 0, section: 0)
             tableView.insertRows(at: [rowIndex], with: .automatic)

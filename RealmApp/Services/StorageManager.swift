@@ -8,7 +8,7 @@
 
 import Foundation
 import RealmSwift
-
+    
 final class StorageManager {
     static let shared = StorageManager()
     
@@ -22,7 +22,7 @@ final class StorageManager {
         }
     }
     
-    // MARK: - Task List
+    // MARK: Task List
     func save(_ taskLists: [TaskList]) {
         write {
             realm.add(taskLists)
@@ -56,7 +56,7 @@ final class StorageManager {
         }
     }
 
-    // MARK: - Tasks
+    // MARK: Tasks
     func save(_ task: String, withNote note: String, to taskList: TaskList, completion: (Task) -> Void) {
         write {
             let task = Task(value: [task, note])
@@ -85,7 +85,7 @@ final class StorageManager {
     }
     
     
-    // MARK: - Private realm write method
+    // MARK: Private realm write method
     private func write(completion: () -> Void) {
         do {
             try realm.write {
